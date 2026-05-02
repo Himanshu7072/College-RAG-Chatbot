@@ -4,10 +4,19 @@ Run with:  streamlit run app.py
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
 import streamlit as st
+
+# Bridge Streamlit Cloud secrets into env vars so chatbot.py (which uses
+# os.getenv) works in both local (.env) and cloud (st.secrets) deployments.
+try:
+    for _k, _v in st.secrets.items():
+        os.environ.setdefault(_k, str(_v))
+except Exception:
+    pass
 
 # Make src/ importable
 sys.path.insert(0, str(Path(__file__).parent / "src"))
