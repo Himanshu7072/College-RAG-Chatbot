@@ -12,11 +12,14 @@ import streamlit as st
 
 # Bridge Streamlit Cloud secrets into env vars so chatbot.py (which uses
 # os.getenv) works in both local (.env) and cloud (st.secrets) deployments.
-try:
-    for _k, _v in st.secrets.items():
-        os.environ.setdefault(_k, str(_v))
-except Exception:
-    pass
+for _k in ("GOOGLE_API_KEY", "GEMINI_MODEL", "EMBEDDING_MODEL",
+           "VECTOR_DIR", "TOP_K"):
+    try:
+        _v = st.secrets.get(_k)
+    except Exception:
+        _v = None
+    if _v:
+        os.environ[_k] = str(_v)
 
 # Make src/ importable
 sys.path.insert(0, str(Path(__file__).parent / "src"))
